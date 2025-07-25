@@ -1,0 +1,11 @@
+id,nombre,descripcion,calificacion,stock,precio,categoria,vendedor_id
+prod001,Producto1,Descripción del producto 1,3,38,75.57,Electrónica,cuenta007
+prod002,Producto2,Descripción del producto 2,2,38,199.04,Libros,cuenta008
+prod003,Producto3,Descripción del producto 3,3,31,123.68,Ropa,cuenta006
+prod004,Producto4,Descripción del producto 4,1,19,129.63,Hogar,cuenta006
+prod005,Producto5,Descripción del producto 5,4,22,147.09,Oficina,cuenta007
+prod006,Producto6,Descripción del producto 6,4,13,46.96,Mascotas,cuenta008
+prod007,Producto7,Descripción del producto 7,2,34,121.93,Libros,cuenta009
+prod008,Producto8,Descripción del producto 8,5,41,113.96,Salud,cuenta008
+prod009,Producto9,Descripción del producto 9,2,22,38.42,Ropa,cuenta007
+prod010,Producto10,Descripción del producto 10,3,34,137.86,Salud,cuenta010

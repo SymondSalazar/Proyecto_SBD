@@ -1,0 +1,6 @@
+cuenta_id,descripcion,valoracion
+cuenta006,Vendedor 6,ALTO
+cuenta007,Vendedor 7,BAJO
+cuenta008,Vendedor 8,ALTO
+cuenta009,Vendedor 9,BAJO
+cuenta010,Vendedor 10,MEDIO

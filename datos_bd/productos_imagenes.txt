@@ -1,0 +1,11 @@
+url,product_id
+https://img.com/producto1.jpg,prod001
+https://img.com/producto2.jpg,prod002
+https://img.com/producto3.jpg,prod003
+https://img.com/producto4.jpg,prod004
+https://img.com/producto5.jpg,prod005
+https://img.com/producto6.jpg,prod006
+https://img.com/producto7.jpg,prod007
+https://img.com/producto8.jpg,prod008
+https://img.com/producto9.jpg,prod009
+https://img.com/producto10.jpg,prod010

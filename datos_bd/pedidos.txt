@@ -1,0 +1,11 @@
+id,cliente_id,estado_envio,direccion_entrega,fecha_entrega,fecha_creacion
+ped001,cuenta001,ENTREGADO,Dirección 7 de entrega,2025-08-16,2025-07-01
+ped002,cuenta005,PENDIENTE,Dirección 14 de entrega,2025-08-17,2025-06-01
+ped003,cuenta003,ENTREGADO,Dirección 21 de entrega,2025-08-20,2025-06-26
+ped004,cuenta002,PENDIENTE,Dirección 28 de entrega,2025-08-24,2025-06-08
+ped005,cuenta003,PENDIENTE,Dirección 35 de entrega,2025-08-09,2025-06-30
+ped006,cuenta001,PENDIENTE,Dirección 42 de entrega,2025-08-19,2025-07-02
+ped007,cuenta004,ENVIADO,Dirección 49 de entrega,2025-08-13,2025-07-06
+ped008,cuenta003,ENVIADO,Dirección 56 de entrega,2025-08-25,2025-07-19
+ped009,cuenta004,PENDIENTE,Dirección 63 de entrega,2025-08-10,2025-06-25
+ped010,cuenta004,PENDIENTE,Dirección 70 de entrega,2025-08-20,2025-07-24

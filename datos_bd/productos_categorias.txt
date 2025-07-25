@@ -1,0 +1,11 @@
+nombre
+Electrónica
+Ropa
+Hogar
+Juguetes
+Libros
+Deportes
+Oficina
+Mascotas
+Salud
+Belleza
