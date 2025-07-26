@@ -1,6 +1,0 @@
-cuenta_id,direccion_envio
-cuenta001,Calle 10 y Av. Ejemplo
-cuenta002,Calle 20 y Av. Ejemplo
-cuenta003,Calle 30 y Av. Ejemplo
-cuenta004,Calle 40 y Av. Ejemplo
-cuenta005,Calle 50 y Av. Ejemplo

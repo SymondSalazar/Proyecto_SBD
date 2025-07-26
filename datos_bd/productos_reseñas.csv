@@ -1,0 +1,11 @@
+id,cliente_id,producto_id,calificacion,comentario
+RS001,CU001,PR002,5,Comentario sobre PR002 por CU001
+RS002,CU004,PR002,5,Comentario sobre PR002 por CU004
+RS003,CU005,PR001,2,Comentario sobre PR001 por CU005
+RS004,CU002,PR001,3,Comentario sobre PR001 por CU002
+RS005,CU004,PR001,5,Comentario sobre PR001 por CU004
+RS006,CU005,PR001,5,Comentario sobre PR001 por CU005
+RS007,CU005,PR002,2,Comentario sobre PR002 por CU005
+RS008,CU002,PR007,1,Comentario sobre PR007 por CU002
+RS009,CU002,PR002,2,Comentario sobre PR002 por CU002
+RS0010,CU005,PR002,3,Comentario sobre PR002 por CU005

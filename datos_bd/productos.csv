@@ -1,0 +1,11 @@
+id,nombre,descripcion,calificacion,stock,precio,categoria,vendedor_id
+PR001,Producto1,Descripción del producto 1,3,25.6,44.07,Hogar,CU008
+PR002,Producto2,Descripción del producto 2,4,87.1,345.89,Juguetes,CU007
+PR003,Producto3,Descripción del producto 3,3,21.5,465.0,Juguetes,CU007
+PR004,Producto4,Descripción del producto 4,1,69.5,161.52,Hogar,CU009
+PR005,Producto5,Descripción del producto 5,3,159.9,207.04,Juguetes,CU008
+PR006,Producto6,Descripción del producto 6,5,33.8,85.2,Hogar,CU009
+PR007,Producto7,Descripción del producto 7,3,158.7,420.9,Hogar,CU006
+PR008,Producto8,Descripción del producto 8,2,169.0,120.63,Tecnología,CU007
+PR009,Producto9,Descripción del producto 9,4,149.2,403.55,Ropa,CU009
+PR0010,Producto10,Descripción del producto 10,1,189.5,475.31,Hogar,CU009

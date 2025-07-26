@@ -1,0 +1,6 @@
+cuenta_id,direccion_envio,metodo_pago
+CU001,Calle Falsa 10, PAYPAL
+CU002,Calle Falsa 11, TARJETA
+CU003,Calle Falsa 12, TARJETA
+CU004,Calle Falsa 13, TARJETA
+CU005,Calle Falsa 14, PAYPAL
