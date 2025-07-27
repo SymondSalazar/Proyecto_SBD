@@ -1,5 +1,4 @@
 class InputManager:
-
     def __init__(self):
         raise TypeError("No se puede instanciar esta clase.")
 
@@ -60,7 +59,7 @@ class InputManager:
     def leer_opcion_menu(opciones: list[str], titulo: str) -> int:
         print(f"\n---- {titulo} ----")
         for i, opcion in enumerate(opciones):
-            print(f"{i+1}.- {opcion}")
+            print(f"{i + 1}.- {opcion}")
 
         eleccion: int = -1
 

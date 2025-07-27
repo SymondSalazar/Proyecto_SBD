@@ -1,18 +1,19 @@
-from Controller.Controllers import DatabaseController
+from Controller.Controllers import SystemController
 from Controller.InputManager import InputManager
+import sys
 
 
 def inicializar() -> None:
     print("Sistema Inicializado")
-    DatabaseController.conectar_database()
+    SystemController.conectar_database()
 
 
-def menu_cliente():
+def menu_cliente(id: str) -> None:
     print("--- Bienvenido Cliente ---")
     InputManager.pausar()
 
 
-def menu_vendedor():
+def menu_vendedor(id: str) -> None:
     print("--- Bienvenido Vendedor ---")
     opciones: list[str] = [
         "Mostrar todos mis productos",
@@ -22,8 +23,24 @@ def menu_vendedor():
         "Apagar Sistema",
     ]
     seleccion: int = InputManager.leer_opcion_menu(opciones, "Menu")
-    print(seleccion)
-    InputManager.pausar()
+    match seleccion:
+        case 1:
+            productos: list[str] = SystemController.mostrar_productos_vendedor(id)
+            if len(productos) == 0:
+                print("No cuenta con nigun producto")
+                pass
+
+            print("\n ---- Estos son sus productos ----")
+            for i, producto in enumerate(productos):
+                print(f"{i + 1}.- {producto}")
+        case 2:
+            pass
+        case 3:
+            pass
+        case 4:
+            sistema()
+        case 5:
+            sys.exit(0)
 
 
 def sistema() -> None:
@@ -31,18 +48,21 @@ def sistema() -> None:
         print("\n  ---- Iniciar Sesion ----")
         email = InputManager.leer_texto_no_vacio("Ingrese  su email: ")
         password = InputManager.leer_texto_no_vacio("Ingrese su contraseña: ")
-        tupla_result = DatabaseController.iniciar_sesion(email, password)
+        tupla_result = SystemController.iniciar_sesion(email, password)
         if not tupla_result[0]:
             print("Error: Usuario no encontrado")
         else:
             break
     if tupla_result[1] == "cliente":
-        menu_cliente()
+        menu_cliente(tupla_result[2])
     else:
-        menu_vendedor()
+        menu_vendedor(tupla_result[2])
 
 
-if __name__ == "__main__":
-
-    inicializar()
-    sistema()
+i = 0
+while True:
+    if __name__ == "__main__":
+        if i == 0:
+            inicializar()
+            i += 1
+        sistema()

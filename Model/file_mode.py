@@ -45,7 +45,7 @@ class File_model:
             & (File_model.cuentas["contrasena"] == password)
         ]
         if filas.empty:
-            return (False, "Ninguno")
+            return (False, "Ninguno", "Niguno")
 
         id_ = filas.iloc[0]["id"]
 
@@ -53,6 +53,44 @@ class File_model:
         rol = "cliente"
         if get_rol.empty:
             rol = "vendedor"
-            return (True, rol)
+            return (True, rol, id_)
 
-        return (True, rol)
+        return (True, rol, id_)
+
+    @staticmethod
+    def filtrar_productos(metodo: str, busqueda: str) -> list[str]:
+        productos: list[str] = []
+
+        metodos = ["id", "nombre", "descripcion", "categoria", "vendedor"]
+        categorias = ["juguetes", "ropa", "tecnologia", "hogar"]
+
+        if metodo == "categoria" and busqueda not in categorias:
+            return productos
+        if metodo not in metodos:
+            return productos
+
+        filas = pd.DataFrame()
+        match metodo:
+            case "id":
+                filas = File_model.productos[File_model.productos["id"] == busqueda]
+            case "nombre":
+                filas = File_model.productos[File_model.productos["nombre"] == busqueda]
+            case "descripcion":
+                filas = File_model.productos[
+                    File_model.productos["descripcion"] == busqueda
+                ]
+            case "categoria":
+                filas = File_model.productos[
+                    File_model.productos["categoria"] == busqueda
+                ]
+            case "vendedor":
+                filas = File_model.productos[
+                    File_model.productos["vendedor_id"] == busqueda
+                ]
+
+        if filas.empty:
+            return productos
+
+        for nombre in filas["nombre"]:
+            productos.append(nombre)
+        return productos
