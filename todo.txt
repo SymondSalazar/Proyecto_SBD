@@ -1,0 +1,10 @@
+Cliente:
+    Implementar reseñas
+
+Comprador:
+    Implementar la logica de gestionar_productos
+    Implementar la logica de gestionar_pedidos_vendedor
+    Implementar en el menu la opcion de ver estadisticas
+    Implementar la logica para mostrar las estadisticas de ventas
+
+Faltan mas cosas pero no recuerd ahora
