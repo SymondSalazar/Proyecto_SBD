@@ -83,22 +83,18 @@ class SystemController:
 
     @staticmethod
     def crear_resena_producto(cliente_id: str, producto_id: str, calificacion: int, comentario: str) -> bool:
-        """Crea una nueva reseña para un producto"""
         return Model.crear_resena(cliente_id, producto_id, calificacion, comentario)
 
     @staticmethod
     def obtener_resenas_producto(producto_id: str) -> list[dict]:
-        """Obtiene todas las reseñas de un producto"""
         return Model.obtener_resenas_producto(producto_id)
 
     @staticmethod
     def puede_cliente_resenar(cliente_id: str, producto_id: str) -> bool:
-        """Verifica si un cliente puede reseñar un producto"""
         return Model.verificar_puede_resenar(cliente_id, producto_id)
 
     @staticmethod
     def obtener_producto_info(producto_id: str) -> dict:
-        """Obtiene información detallada de un producto"""
         productos = Model.productos
         producto = productos[productos["id"] == producto_id]
         if not producto.empty:
@@ -115,7 +111,6 @@ class SystemController:
 
     @staticmethod
     def obtener_productos_pedido(pedido_id: str) -> list[dict]:
-        """Obtiene los productos de un pedido específico"""
         pedidos_productos = Model.pedidos_productos
         productos_pedido = pedidos_productos[pedidos_productos["pedido_id"] == pedido_id]
         
