@@ -39,6 +39,13 @@ def comprar(id_usr, product_info: dict) -> bool:
         if not tarjeta.isdigit() or len(tarjeta) != 10:
             print(">>> ERROR: El número de tarjeta debe ser un número de 10 dígitos")
 
+    confirmacion = InputManager.leer_confirmacion(
+        "¿Desea escribir una reseña del producto? (S/N): "
+    )
+
+    if confirmacion:
+        escribir_resena(product_info["nombre"], id, id_usr)
+
     if SystemController.actualizar_stock(stock - cantidad, id):
         print(
             f">>> Compra de {cantidad} unidades del producto {product_info['nombre']} realizada con éxito"
@@ -161,8 +168,28 @@ def mostrar_carrito(id_pedido: str, id_usr: str) -> None:
     InputManager.pausar()
 
 
+# Funcion para escribir reseñas
+def escribir_resena(nombre: str, id_producto: str, id_usuario: str) -> None:
+    calificacion = 10
+    print(f"\n=== Reseña para el producto {nombre} ===")
+    while calificacion > 5:
+        calificacion = InputManager.leer_entero_positivo(
+            "Ingrese la calificación (1-5): "
+        )
+        if calificacion > 5:
+            print(">>> ERROR: La calificación debe ser entre 1 y 5")
+
+    comentario = InputManager.leer_texto_no_vacio("Ingrese su comentario: ")
+
+    if SystemController.crear_resena_producto(
+        id_producto, id_usuario, calificacion, comentario
+    ):
+        print(">>> Reseña guardada exitosamente")
+    else:
+        print(">>> ERROR: No se pudo guardar la reseña")
+
+
 def confirmar_compra_carrito(id_pedido: str, id_usr: str) -> bool:
-    """Confirma la compra del carrito"""
     # Mostrar resumen final
     mostrar_carrito(id_pedido, id_usr)
 
@@ -192,9 +219,17 @@ def confirmar_compra_carrito(id_pedido: str, id_usr: str) -> bool:
         print(">>> ERROR: No se encontró el carrito")
         return False
 
+    confirmacion = InputManager.leer_confirmacion(
+        "¿Desea escribir una reseña de cada producto? (S/N): "
+    )
+
     # Actualizar stock de cada producto
     for producto in carrito["productos"]:
         producto_info = SystemController.mostrar_producto(producto["id"])
+
+        if confirmacion:
+            escribir_resena(producto_info["nombre"], producto["id"], id_usr)
+
         nuevo_stock = producto_info["stock"] - producto["cantidad"]
 
         if not SystemController.actualizar_stock(nuevo_stock, producto["id"]):
@@ -531,124 +566,6 @@ def sistema() -> None:
         menu_cliente(tupla_result[2])
     else:
         menu_vendedor(tupla_result[2])
-
-
-def mostrar_resenas_producto(producto_id: str) -> None:
-    """Muestra todas las reseñas de un producto específico"""
-    resenas = SystemController.obtener_resenas_producto(producto_id)
-    
-    if not resenas:
-        print("\n" + "="*50)
-        print(">>> No hay reseñas para este producto aún")
-        print("="*50)
-        return
-    
-    print("\n" + "="*60)
-    print(f">>> RESEÑAS DEL PRODUCTO:")
-    print("="*60)
-    
-    for i, resena in enumerate(resenas, 1):
-        print(f"\n--- Reseña #{i} ---")
-        print(f"Cliente: {resena['cliente_nombre']}")
-        print(f"Calificación: {'★' * resena['calificacion']}{'☆' * (5 - resena['calificacion'])} ({resena['calificacion']}/5)")
-        print(f"Comentario: {resena['comentario']}")
-        print("-" * 40)
-    
-    print("="*60)
-
-
-def crear_resena_cliente(cliente_id: str) -> None:
-    """Permite al cliente crear una reseña para un producto que haya comprado"""
-    productos_comprados = []
-    
-    # Obtener productos que el cliente ha comprado
-    pedidos = SystemController.obtener_pedidos_usuario(cliente_id)
-    productos_ids = set()
-    
-    for pedido in pedidos:
-        if pedido["estado"] != "EN_CARRITO":
-            productos_pedido = SystemController.obtener_productos_pedido(pedido["id"])
-            for producto in productos_pedido:
-                productos_ids.add(producto["producto_id"])
-    
-    if not productos_ids:
-        print("\n>>> No has comprado ningún producto aún. Solo puedes reseñar productos que hayas comprado.")
-        return
-    
-    # Mostrar productos disponibles para reseñar
-    print("\n" + "="*50)
-    print(">>> PRODUCTOS QUE PUEDES RESEÑAR:")
-    print("="*50)
-    
-    productos_disponibles = []
-    for i, producto_id in enumerate(productos_ids, 1):
-        producto_info = SystemController.obtener_producto_info(producto_id)
-        if producto_info:
-            # Verificar si ya reseñó este producto
-            if not SystemController.puede_cliente_resenar(cliente_id, producto_id):
-                continue
-                
-            productos_disponibles.append(producto_id)
-            print(f"{len(productos_disponibles)}. {producto_info['nombre']} - ${producto_info['precio']}")
-    
-    if not productos_disponibles:
-        print(">>> Ya has reseñado todos los productos que compraste.")
-        return
-    
-    # Seleccionar producto
-    while True:
-        try:
-            opcion = int(InputManager.leer_texto_no_vacio("\nSelecciona el número del producto a reseñar: "))
-            if 1 <= opcion <= len(productos_disponibles):
-                producto_id = productos_disponibles[opcion - 1]
-                break
-            else:
-                print(f">>> ERROR: Selecciona un número entre 1 y {len(productos_disponibles)}")
-        except ValueError:
-            print(">>> ERROR: Ingresa un número válido")
-    
-    # Obtener calificación
-    while True:
-        try:
-            calificacion = int(InputManager.leer_texto_no_vacio("Calificación (1-5 estrellas): "))
-            if 1 <= calificacion <= 5:
-                break
-            else:
-                print(">>> ERROR: La calificación debe ser entre 1 y 5")
-        except ValueError:
-            print(">>> ERROR: Ingresa un número válido")
-    
-    # Obtener comentario
-    comentario = InputManager.leer_texto_no_vacio("Escribe tu comentario sobre el producto: ")
-    
-    # Crear la reseña
-    if SystemController.crear_resena_producto(cliente_id, producto_id, calificacion, comentario):
-        print("\n>>> ¡Reseña creada exitosamente! ⭐")
-        print(">>> Gracias por compartir tu experiencia.")
-    else:
-        print("\n>>> ERROR: No se pudo crear la reseña. Ya reseñaste este producto.")
-
-
-def ver_producto_con_resenas(producto_id: str) -> None:
-    """Muestra información del producto junto con sus reseñas"""
-    producto_info = SystemController.obtener_producto_info(producto_id)
-    
-    if not producto_info:
-        print(">>> ERROR: Producto no encontrado")
-        return
-    
-    # Mostrar información del producto
-    print("\n" + "="*60)
-    print(f">>> INFORMACIÓN DEL PRODUCTO:")
-    print("="*60)
-    print(f"Nombre: {producto_info['nombre']}")
-    print(f"Precio: ${producto_info['precio']}")
-    print(f"Stock disponible: {producto_info['stock']} unidades")
-    print(f"Calificación promedio: {'★' * producto_info['calificacion']}{'☆' * (5 - producto_info['calificacion'])} ({producto_info['calificacion']}/5)")
-    print(f"Descripción: {producto_info['descripcion']}")
-    
-    # Mostrar reseñas
-    mostrar_resenas_producto(producto_id)
 
 
 i = 0

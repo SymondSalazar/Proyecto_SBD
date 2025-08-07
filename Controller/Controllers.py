@@ -82,48 +82,13 @@ class SystemController:
         return confirmacion_exitosa
 
     @staticmethod
-    def crear_resena_producto(cliente_id: str, producto_id: str, calificacion: int, comentario: str) -> bool:
-        """Crea una nueva reseña para un producto"""
-        return Model.crear_resena(cliente_id, producto_id, calificacion, comentario)
-
-    @staticmethod
-    def obtener_resenas_producto(producto_id: str) -> list[dict]:
-        """Obtiene todas las reseñas de un producto"""
-        return Model.obtener_resenas_producto(producto_id)
-
-    @staticmethod
-    def puede_cliente_resenar(cliente_id: str, producto_id: str) -> bool:
-        """Verifica si un cliente puede reseñar un producto"""
-        return Model.verificar_puede_resenar(cliente_id, producto_id)
-
-    @staticmethod
-    def obtener_producto_info(producto_id: str) -> dict:
-        """Obtiene información detallada de un producto"""
-        productos = Model.productos
-        producto = productos[productos["id"] == producto_id]
-        if not producto.empty:
-            producto_data = producto.iloc[0]
-            return {
-                "id": producto_data["id"],
-                "nombre": producto_data["nombre"],
-                "precio": producto_data["precio"],
-                "stock": producto_data["stock"],
-                "calificacion": producto_data["calificacion"],
-                "descripcion": producto_data["descripcion"]
-            }
-        return {}
-
-    @staticmethod
-    def obtener_productos_pedido(pedido_id: str) -> list[dict]:
-        """Obtiene los productos de un pedido específico"""
-        pedidos_productos = Model.pedidos_productos
-        productos_pedido = pedidos_productos[pedidos_productos["pedido_id"] == pedido_id]
-        
-        productos_lista = []
-        for _, producto in productos_pedido.iterrows():
-            productos_lista.append({
-                "producto_id": producto["producto_id"],
-                "cantidad": producto["cantidad"]
-            })
-        
-        return productos_lista
+    def crear_resena_producto(
+        id_producto: str,
+        id_usuario: str,
+        calificacion: int,
+        comentario: str,
+    ) -> bool:
+        exito = Model.crear_resena_producto(
+            id_producto, id_usuario, calificacion, comentario
+        )
+        return exito

@@ -325,3 +325,35 @@ class File_model:
             return True
         except Exception:
             return False
+
+    @staticmethod
+    def crear_resena_producto(
+        id_producto: str,
+        id_usuario: str,
+        calificacion: int,
+        comentario: str,
+    ) -> bool:
+        try:
+            print(">>> Creando reseña del producto...")
+            data_frame_temp = pd.DataFrame(
+                {
+                    "id": [f"RS{str(len(File_model.productos_resenas) + 1).zfill(3)}"],
+                    "cliente_id": [id_usuario],
+                    "producto_id": [id_producto],
+                    "calificacion": [calificacion],
+                    "comentario": [comentario],
+                }
+            )
+
+            # Actualizar el DataFrame de reseñas
+            File_model.productos_resenas = pd.concat(
+                [File_model.productos_resenas, data_frame_temp], ignore_index=True
+            )
+
+            # Guardar en archivo CSV
+            data_frame_temp.to_csv(
+                "datos_bd/productos_reseñas.csv", mode="a", header=False, index=False
+            )
+            return True
+        except Exception:
+            return False

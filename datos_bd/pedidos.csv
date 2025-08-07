@@ -1,3 +1,5 @@
 id,cliente_id,direccion_entrega,fecha_entrega,fecha_compra,estado_envio
 PD001,CU001,Calle Falsa 10,04-08-2025,30-07-2025,EN_PROCESO
 PD002,CU001,Calle Falsa 10,04-08-2025,30-07-2025,EN_PROCESO
+PD003,CU001,Calle Falsa 10,2025-08-11,2025-08-06,En_Proceso
+PD004,CU001,Calle Falsa 10,11-08-2025,06-08-2025,EN_PROCESO
