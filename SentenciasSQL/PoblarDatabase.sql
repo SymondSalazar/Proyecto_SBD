@@ -1,6 +1,4 @@
--- ========================================
--- INSERCIÓN DE DATOS REALISTAS
--- ========================================
+
 
 -- 1. Cuentas 
 INSERT INTO cuentas (id, email, nombre, fecha_creacion, contrasena) VALUES
