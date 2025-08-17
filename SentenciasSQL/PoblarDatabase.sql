@@ -2,7 +2,7 @@
 -- INSERCIÓN DE DATOS REALISTAS
 -- ========================================
 
--- 1. Cuentas (usuarios base)
+-- 1. Cuentas 
 INSERT INTO cuentas (id, email, nombre, fecha_creacion, contrasena) VALUES
 ('USR001', 'ana.torres@mail.com', 'Ana Torres', '2023-01-15', 'PassAna#23'),
 ('USR002', 'carlos.mendez@corp.com', 'Carlos Méndez', '2023-02-20', 'Secure789!'),
@@ -26,8 +26,6 @@ INSERT INTO clientes (cuenta_id, direccion_envio, metodo_pago) VALUES
 ('USR010', 'Callejón San Francisco 45, Col. Centro, Puebla, CP 72000', 'TARJETA');
 
 -- 3. Vendedores
--- Se cambian las valoraciones antiguas (ALTA/MEDIA/BAJA) por valores numéricos (estrellas)
--- Mapeo asumido: ALTA -> 5.0, MEDIA -> 3.0, BAJA -> 1.0
 INSERT INTO vendedores (cuenta_id, descripcion, valoracion) VALUES
 ('USR004', 'Electrónicos premium con garantía extendida', 5.0),
 ('USR005', 'Moda sostenible y productos ecológicos', 3.0),
@@ -35,7 +33,6 @@ INSERT INTO vendedores (cuenta_id, descripcion, valoracion) VALUES
 ('USR009', 'Arte y decoración artesanal mexicana', 1.0),
 ('USR010', 'Deportes y actividades al aire libre', 3.0);
 
----"juguetes", "ropa", "tecnologia", "hogar"
 -- 4. Productos
 INSERT INTO productos (id, nombre, descripcion, calificacion, stock, precio, categoria, vendedor_id) VALUES
 ('PROD1001', 'Smartphone X9', '6.5" AMOLED, 128GB RAM, Triple Cámara', 4.5, 50, 8999.99, 'tecnologia', 'USR004'),
@@ -72,7 +69,7 @@ INSERT INTO pedidos (id, cliente_id, direccion_entrega, fecha_entrega, fecha_com
 ('PED10014', 'USR010', 'Callejón San Francisco 45, Col. Centro, Puebla, CP 72000', NULL, '2024-05-12', 'EN_CARRITO'),
 ('PED10015', 'USR001', 'Calle Primavera 234, Col. Centro, CDMX, CP 06000', '2024-05-20', '2024-05-15', 'ENTREGADO');
 
--- 6. Pedidos_Productos (Detalles de compra)
+-- 6. Pedidos_Productos 
 INSERT INTO pedidos_productos (pedido_id, producto_id, cantidad) VALUES
 ('PED10001', 'PROD1001', 1),
 ('PED10001', 'PROD1005', 2),
