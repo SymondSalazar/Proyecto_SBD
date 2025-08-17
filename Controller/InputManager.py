@@ -52,6 +52,20 @@ class InputManager:
         return valor
 
     @staticmethod
+    def leer_decimal_positivo(mensaje: str) -> float:
+        valor: float = -1.0
+        while valor <= 0:
+            valor = InputManager.leer_decimal(mensaje)
+            if valor <= 0:
+                print(">>> ERROR: El valor debe ser mayor a 0")
+        return valor
+
+    @staticmethod
+    def leer_texto_opcional(mensaje: str) -> str:
+        print(mensaje)
+        return input().strip()
+
+    @staticmethod
     def leer_confirmacion(mensaje: str) -> bool:
         respuesta: str = ""
         while respuesta.lower() not in ["s", "n"]:

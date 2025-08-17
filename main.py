@@ -189,6 +189,42 @@ def escribir_resena(nombre: str, id_producto: str, id_usuario: str) -> None:
         print(">>> ERROR: No se pudo guardar la reseña")
 
 
+# Función para mostrar reseñas de un producto
+def mostrar_resenas_producto(producto_id: str, nombre_producto: str) -> None:
+    """Muestra todas las reseñas de un producto específico"""
+    resenas: list[dict] = SystemController.obtener_resenas_producto(producto_id)
+
+    if not resenas:
+        print(f"\n>>> No hay reseñas disponibles para '{nombre_producto}'")
+        return
+
+    print(f"\n=== RESEÑAS DE '{nombre_producto.upper()}' ===")
+
+    # Calcular calificación promedio
+    total_calificaciones: int = sum(resena["calificacion"] for resena in resenas)
+    promedio: float = total_calificaciones / len(resenas)
+
+    # Mostrar estadísticas
+    print(f"📊 Total de reseñas: {len(resenas)}")
+    print(f"⭐ Calificación promedio: {promedio:.1f}/5.0")
+    print("-" * 60)
+
+    # Mostrar cada reseña
+    for i, resena in enumerate(resenas, 1):
+        estrellas: str = "⭐" * resena["calificacion"] + "☆" * (
+            5 - resena["calificacion"]
+        )
+
+        print(f"\n#{i} - {resena['cliente_nombre']}")
+        print(f"   {estrellas} ({resena['calificacion']}/5)")
+        print(f'   "{resena["comentario"]}"')
+
+        if i < len(resenas):
+            print("-" * 40)
+
+    print("-" * 60)
+
+
 def confirmar_compra_carrito(id_pedido: str, id_usr: str) -> bool:
     # Mostrar resumen final
     mostrar_carrito(id_pedido, id_usr)
@@ -248,18 +284,33 @@ def navegar(id_usr, productos: list[str], ids: list[str]) -> None:
     seleccion = InputManager.leer_opcion_menu(productos, "SELECCIONE UN PRODUCTO")
     product_info = SystemController.mostrar_producto(ids[seleccion - 1])
 
-    realizar_compra: bool = InputManager.leer_confirmacion(
-        "¿Desea realizar una compra del producto seleccionado? (S/N)"
-    )
+    # Mostrar opciones adicionales después de ver el producto
+    while True:
+        opciones_producto: list[str] = [
+            "Ver reseñas del producto",
+            "Realizar compra",
+            "Volver al menú anterior",
+        ]
 
-    if realizar_compra:
-        compra_exitosa: bool = comprar(id_usr, product_info)
-        if compra_exitosa:
-            return
-        else:
-            print(">>> ERROR: No se pudo completar la compra")
+        opcion: int = InputManager.leer_opcion_menu(
+            opciones_producto, "OPCIONES DEL PRODUCTO"
+        )
 
-    InputManager.pausar()
+        match opcion:
+            case 1:
+                mostrar_resenas_producto(
+                    ids[seleccion - 1], product_info.get("nombre", "Producto")
+                )
+                InputManager.pausar()
+            case 2:
+                compra_exitosa: bool = comprar(id_usr, product_info)
+                if compra_exitosa:
+                    return
+                else:
+                    print(">>> ERROR: No se pudo completar la compra")
+                    InputManager.pausar()
+            case 3:
+                return
 
 
 def gestionar_pedidos_cliente(id_usr: str):
@@ -509,12 +560,458 @@ def menu_cliente(id: str) -> None:
     menu_cliente(id)
 
 
-def gestionar_productos():
-    pass
+def gestionar_productos(id_vendedor: str) -> None:
+    """Permite al vendedor gestionar sus productos"""
+    while True:
+        opciones: list[str] = [
+            "Agregar nuevo producto",
+            "Ver mis productos",
+            "Editar producto existente",
+            "Eliminar producto",
+            "Volver al menú principal",
+        ]
+
+        seleccion: int = InputManager.leer_opcion_menu(opciones, "GESTIÓN DE PRODUCTOS")
+
+        match seleccion:
+            case 1:
+                agregar_producto_vendedor(id_vendedor)
+            case 2:
+                ver_productos_vendedor(id_vendedor)
+            case 3:
+                editar_producto_vendedor(id_vendedor)
+            case 4:
+                eliminar_producto_vendedor(id_vendedor)
+            case 5:
+                return
 
 
-def gestionar_pedidos_vendedor():
-    pass
+def agregar_producto_vendedor(id_vendedor: str) -> None:
+    """Permite al vendedor agregar un nuevo producto"""
+    print("\n=== AGREGAR NUEVO PRODUCTO ===")
+
+    nombre: str = InputManager.leer_texto_no_vacio("Ingrese el nombre del producto: ")
+    descripcion: str = InputManager.leer_texto_no_vacio(
+        "Ingrese la descripción del producto: "
+    )
+
+    precio: float = 0.0
+    while precio <= 0:
+        precio = InputManager.leer_decimal_positivo("Ingrese el precio del producto: $")
+        if precio <= 0:
+            print(">>> ERROR: El precio debe ser mayor a 0")
+
+    stock: int = 0
+    while stock < 0:
+        stock = InputManager.leer_entero("Ingrese la cantidad en stock: ")
+        if stock < 0:
+            print(">>> ERROR: El stock no puede ser negativo")
+
+    print("\nCategorías disponibles:")
+    categorias: list[str] = ["juguetes", "ropa", "tecnologia", "hogar"]
+    for i, categoria in enumerate(categorias):
+        print(f"  {i + 1}. {categoria.capitalize()}")
+
+    categoria_seleccionada: str = ""
+    while categoria_seleccionada not in categorias:
+        try:
+            opcion: int = InputManager.leer_entero_positivo(
+                f"Seleccione una categoría (1-{len(categorias)}): "
+            )
+            if 1 <= opcion <= len(categorias):
+                categoria_seleccionada = categorias[opcion - 1]
+            else:
+                print(">>> ERROR: Selección inválida")
+        except Exception:
+            print(">>> ERROR: Ingrese un número válido")
+
+    # Confirmar creación
+    print("\n=== CONFIRMACIÓN ===")
+    print(f"Nombre: {nombre}")
+    print(f"Descripción: {descripcion}")
+    print(f"Precio: ${precio:.2f}")
+    print(f"Stock: {stock}")
+    print(f"Categoría: {categoria_seleccionada.capitalize()}")
+
+    confirmacion: bool = InputManager.leer_confirmacion(
+        "¿Confirma la creación del producto? (S/N): "
+    )
+
+    if confirmacion:
+        resultado: bool = SystemController.crear_producto_vendedor(
+            nombre, descripcion, precio, stock, categoria_seleccionada, id_vendedor
+        )
+
+        if resultado:
+            print(">>> Producto creado exitosamente")
+        else:
+            print(">>> ERROR: No se pudo crear el producto")
+    else:
+        print(">>> Creación cancelada")
+
+    InputManager.pausar()
+
+
+def ver_productos_vendedor(id_vendedor: str) -> None:
+    """Muestra todos los productos del vendedor"""
+    productos: list[str] = []
+    ids: list[str] = []
+    productos, ids = SystemController.mostrar_productos_vendedor(id_vendedor)
+
+    if len(productos) == 0:
+        print(">>> No cuenta con ningún producto registrado")
+    else:
+        print("\n=== SUS PRODUCTOS ===")
+        for i, producto in enumerate(productos):
+            print(f"  {i + 1}. {producto}")
+
+        # Mostrar detalles de un producto específico
+        ver_detalles: bool = InputManager.leer_confirmacion(
+            "¿Desea ver los detalles de algún producto? (S/N): "
+        )
+
+        if ver_detalles:
+            try:
+                seleccion: int = InputManager.leer_entero(
+                    f"Seleccione un producto (1-{len(productos)}): "
+                )
+                if 1 <= seleccion <= len(productos):
+                    producto_id: str = ids[seleccion - 1]
+                    producto_info: dict = SystemController.mostrar_producto(producto_id)
+
+                    # Ofrecer ver reseñas después de mostrar detalles
+                    ver_resenas: bool = InputManager.leer_confirmacion(
+                        "¿Desea ver las reseñas de este producto? (S/N): "
+                    )
+
+                    if ver_resenas:
+                        mostrar_resenas_producto(
+                            producto_id, producto_info.get("nombre", "Producto")
+                        )
+                else:
+                    print(">>> ERROR: Selección inválida")
+            except Exception:
+                print(">>> ERROR: Selección inválida")
+
+    InputManager.pausar()
+
+
+def editar_producto_vendedor(id_vendedor: str) -> None:
+    """Permite al vendedor editar un producto existente"""
+    productos: list[str] = []
+    ids: list[str] = []
+    productos, ids = SystemController.mostrar_productos_vendedor(id_vendedor)
+
+    if len(productos) == 0:
+        print(">>> No cuenta con ningún producto registrado")
+        InputManager.pausar()
+        return
+
+    print("\n=== EDITAR PRODUCTO ===")
+    print("Seleccione el producto que desea editar:")
+    for i, producto in enumerate(productos):
+        print(f"  {i + 1}. {producto}")
+
+    try:
+        seleccion: int = InputManager.leer_entero(
+            f"Seleccione un producto (1-{len(productos)}): "
+        )
+        if seleccion < 1 or seleccion > len(productos):
+            print(">>> ERROR: Selección inválida")
+            InputManager.pausar()
+            return
+
+        producto_id: str = ids[seleccion - 1]
+        producto_actual: dict = SystemController.mostrar_producto(producto_id)
+
+        if not producto_actual:
+            print(">>> ERROR: No se pudo obtener la información del producto")
+            InputManager.pausar()
+            return
+
+        print("\n=== DATOS ACTUALES ===")
+        # Los detalles ya se muestran por mostrar_producto
+
+        print("\n=== NUEVOS DATOS (presione Enter para mantener el valor actual) ===")
+
+        nombre: str = InputManager.leer_texto_opcional(
+            f"Nuevo nombre [{producto_actual['nombre']}]: "
+        )
+        if not nombre:
+            nombre = producto_actual["nombre"]
+
+        descripcion: str = InputManager.leer_texto_opcional(
+            f"Nueva descripción [{producto_actual['descripcion']}]: "
+        )
+        if not descripcion:
+            descripcion = producto_actual["descripcion"]
+
+        precio_str: str = InputManager.leer_texto_opcional(
+            f"Nuevo precio [{producto_actual['precio']}]: $"
+        )
+        precio: float = float(precio_str) if precio_str else producto_actual["precio"]
+
+        stock_str: str = InputManager.leer_texto_opcional(
+            f"Nuevo stock [{producto_actual['stock']}]: "
+        )
+        stock: int = int(stock_str) if stock_str else producto_actual["stock"]
+
+        print(f"Categoría actual: {producto_actual['categoria']}")
+        categorias: list[str] = ["juguetes", "ropa", "tecnologia", "hogar"]
+        print("Categorías disponibles:")
+        for i, cat in enumerate(categorias):
+            print(f"  {i + 1}. {cat.capitalize()}")
+
+        categoria_str: str = InputManager.leer_texto_opcional(
+            "Nueva categoría (número o presione Enter para mantener): "
+        )
+        categoria: str = producto_actual["categoria"]
+        if categoria_str:
+            try:
+                cat_index: int = int(categoria_str) - 1
+                if 0 <= cat_index < len(categorias):
+                    categoria = categorias[cat_index]
+            except Exception:
+                print(">>> Manteniendo categoría actual")  # Confirmar cambios
+        confirmacion: bool = InputManager.leer_confirmacion(
+            "¿Confirma los cambios? (S/N): "
+        )
+
+        if confirmacion:
+            resultado: bool = SystemController.actualizar_producto_vendedor(
+                producto_id, nombre, descripcion, precio, stock, categoria
+            )
+
+            if resultado:
+                print(">>> Producto actualizado exitosamente")
+            else:
+                print(">>> ERROR: No se pudo actualizar el producto")
+        else:
+            print(">>> Actualización cancelada")
+
+    except Exception as e:
+        print(f">>> ERROR: {e}")
+
+    InputManager.pausar()
+
+
+def eliminar_producto_vendedor(id_vendedor: str) -> None:
+    """Permite al vendedor eliminar un producto"""
+    productos: list[str] = []
+    ids: list[str] = []
+    productos, ids = SystemController.mostrar_productos_vendedor(id_vendedor)
+
+    if len(productos) == 0:
+        print(">>> No cuenta con ningún producto registrado")
+        InputManager.pausar()
+        return
+
+    print("\n=== ELIMINAR PRODUCTO ===")
+    print("Seleccione el producto que desea eliminar:")
+    for i, producto in enumerate(productos):
+        print(f"  {i + 1}. {producto}")
+
+    try:
+        seleccion: int = InputManager.leer_entero(
+            f"Seleccione un producto (1-{len(productos)}): "
+        )
+        if seleccion < 1 or seleccion > len(productos):
+            print(">>> ERROR: Selección inválida")
+            InputManager.pausar()
+            return
+
+        producto_id: str = ids[seleccion - 1]
+        producto_info: dict = SystemController.mostrar_producto(producto_id)
+
+        print("\n>>> ADVERTENCIA: Esta acción no se puede deshacer <<<")
+        confirmacion: bool = InputManager.leer_confirmacion(
+            f"¿Está seguro de que desea eliminar '{producto_info['nombre']}'? (S/N): "
+        )
+
+        if confirmacion:
+            resultado: bool = SystemController.eliminar_producto_vendedor(producto_id)
+
+            if resultado:
+                print(">>> Producto eliminado exitosamente")
+            else:
+                print(">>> ERROR: No se pudo eliminar el producto")
+        else:
+            print(">>> Eliminación cancelada")
+
+    except Exception as e:
+        print(f">>> ERROR: {e}")
+
+    InputManager.pausar()
+
+
+def gestionar_pedidos_vendedor(id_vendedor: str) -> None:
+    """Permite al vendedor gestionar sus pedidos"""
+    while True:
+        opciones: list[str] = [
+            "Ver todos mis pedidos",
+            "Actualizar estado de pedido",
+            "Ver estadísticas de ventas",
+            "Volver al menú principal",
+        ]
+
+        seleccion: int = InputManager.leer_opcion_menu(opciones, "GESTIÓN DE PEDIDOS")
+
+        match seleccion:
+            case 1:
+                ver_pedidos_vendedor(id_vendedor)
+            case 2:
+                actualizar_estado_pedido_vendedor(id_vendedor)
+            case 3:
+                ver_estadisticas_vendedor(id_vendedor)
+            case 4:
+                return
+
+
+def ver_pedidos_vendedor(id_vendedor: str) -> None:
+    """Muestra todos los pedidos del vendedor"""
+    pedidos: list[dict] = SystemController.obtener_pedidos_vendedor(id_vendedor)
+
+    if not pedidos:
+        print(">>> No tiene pedidos registrados")
+        InputManager.pausar()
+        return
+
+    print("\n=== MIS PEDIDOS ===")
+    for pedido in pedidos:
+        estado: str = pedido["estado_envio"]
+        fecha_compra: str = pedido["fecha_compra"]
+        fecha_entrega: str = (
+            pedido["fecha_entrega"] if pedido["fecha_entrega"] else "Pendiente"
+        )
+        cliente_nombre: str = pedido["cliente_nombre"]
+        total: float = pedido["total_vendedor"]
+
+        print(f"\nPedido {pedido['id']} - {estado}")
+        print(f"   Cliente: {cliente_nombre}")
+        print(f"   Fecha compra: {fecha_compra} | Fecha entrega: {fecha_entrega}")
+        print(f"   Dirección: {pedido['direccion_entrega']}")
+        print(f"   Total: ${total:.2f}")
+
+        if pedido["productos"]:
+            print("   Productos:")
+            for producto in pedido["productos"]:
+                subtotal: float = producto["precio"] * producto["cantidad"]
+                print(
+                    f"     - {producto['nombre']} x {producto['cantidad']} = ${subtotal:.2f}"
+                )
+        print("-" * 50)
+
+    InputManager.pausar()
+
+
+def actualizar_estado_pedido_vendedor(id_vendedor: str) -> None:
+    """Permite al vendedor actualizar el estado de un pedido"""
+    pedidos: list[dict] = SystemController.obtener_pedidos_vendedor(id_vendedor)
+
+    if not pedidos:
+        print(">>> No tiene pedidos registrados")
+        InputManager.pausar()
+        return
+
+    # Filtrar pedidos que se pueden actualizar (no entregados)
+    pedidos_actualizables: list[dict] = [
+        p for p in pedidos if p["estado_envio"] != "ENTREGADO"
+    ]
+
+    if not pedidos_actualizables:
+        print(">>> No tiene pedidos pendientes por actualizar")
+        InputManager.pausar()
+        return
+
+    print("\n=== ACTUALIZAR ESTADO DE PEDIDO ===")
+    print("Pedidos que puede actualizar:")
+
+    for i, pedido in enumerate(pedidos_actualizables):
+        print(
+            f"  {i + 1}. Pedido {pedido['id']} - {pedido['estado_envio']} - Cliente: {pedido['cliente_nombre']}"
+        )
+
+    try:
+        seleccion: int = InputManager.leer_entero(
+            f"Seleccione un pedido (1-{len(pedidos_actualizables)}): "
+        )
+        if seleccion < 1 or seleccion > len(pedidos_actualizables):
+            print(">>> ERROR: Selección inválida")
+            InputManager.pausar()
+            return
+
+        pedido_seleccionado: dict = pedidos_actualizables[seleccion - 1]
+
+        print(f"\nPedido seleccionado: {pedido_seleccionado['id']}")
+        print(f"Estado actual: {pedido_seleccionado['estado_envio']}")
+
+        estados_disponibles: list[str] = ["EN_PROCESO", "ENVIADO", "ENTREGADO"]
+        print("\nEstados disponibles:")
+        for i, estado in enumerate(estados_disponibles):
+            print(f"  {i + 1}. {estado}")
+
+        estado_seleccion: int = InputManager.leer_entero(
+            f"Seleccione el nuevo estado (1-{len(estados_disponibles)}): "
+        )
+
+        if estado_seleccion < 1 or estado_seleccion > len(estados_disponibles):
+            print(">>> ERROR: Estado inválido")
+            InputManager.pausar()
+            return
+
+        nuevo_estado: str = estados_disponibles[estado_seleccion - 1]
+
+        confirmacion: bool = InputManager.leer_confirmacion(
+            f"¿Confirma cambiar el estado a '{nuevo_estado}'? (S/N): "
+        )
+
+        if confirmacion:
+            resultado: bool = SystemController.actualizar_estado_pedido(
+                pedido_seleccionado["id"], nuevo_estado
+            )
+
+            if resultado:
+                print(">>> Estado del pedido actualizado exitosamente")
+            else:
+                print(">>> ERROR: No se pudo actualizar el estado del pedido")
+        else:
+            print(">>> Actualización cancelada")
+
+    except Exception as e:
+        print(f">>> ERROR: {e}")
+
+    InputManager.pausar()
+
+
+def ver_estadisticas_vendedor(id_vendedor: str) -> None:
+    """Muestra las estadísticas de ventas del vendedor"""
+    estadisticas: dict = SystemController.obtener_estadisticas_vendedor(id_vendedor)
+
+    if not estadisticas:
+        print(">>> No se pudieron obtener las estadísticas")
+        InputManager.pausar()
+        return
+
+    print("\n=== ESTADÍSTICAS DE VENTAS ===")
+    print(f"Total de productos: {estadisticas['total_productos']}")
+    print(f"Productos sin stock: {estadisticas['productos_sin_stock']}")
+    print(f"Total de pedidos: {estadisticas['total_pedidos']}")
+    print(f"Pedidos en proceso: {estadisticas['pedidos_en_proceso']}")
+    print(f"Pedidos entregados: {estadisticas['pedidos_entregados']}")
+    print(f"Pedidos en carrito: {estadisticas['pedidos_en_carrito']}")
+    print(f"Pedidos enviados: {estadisticas['pedidos_enviados']}")
+    print(f"Ventas totales: ${estadisticas['ventas_totales']:.2f}")
+
+    if estadisticas["productos_mas_vendidos"]:
+        print("\nProductos más vendidos:")
+        for i, producto in enumerate(estadisticas["productos_mas_vendidos"]):
+            print(
+                f"  {i + 1}. {producto['nombre']} - {producto['cantidad_vendida']} unidades"
+            )
+    else:
+        print("\nNo hay datos de productos vendidos")
+
+    InputManager.pausar()
 
 
 def menu_vendedor(id: str) -> None:
@@ -540,9 +1037,9 @@ def menu_vendedor(id: str) -> None:
                     print(f"  {i + 1}. {producto}")
             InputManager.pausar()
         case 2:
-            gestionar_productos()
+            gestionar_productos(id)
         case 3:
-            gestionar_pedidos_vendedor()
+            gestionar_pedidos_vendedor(id)
         case 4:
             sistema()
         case 5:

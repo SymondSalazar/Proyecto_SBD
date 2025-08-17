@@ -1,4 +1,4 @@
-from Model.file_mode import File_model as Model
+from Model.database_mode import Database_model as Model
 
 
 class SystemController:
@@ -39,10 +39,27 @@ class SystemController:
                     continue
 
                 print(f"{key.capitalize()}: {value}")
+
+            # Mostrar información básica de reseñas
+            resenas: list[dict] = Model.obtener_resenas_producto(id)
+            if resenas:
+                total_resenas: int = len(resenas)
+                promedio: float = (
+                    sum(r["calificacion"] for r in resenas) / total_resenas
+                )
+                print(f"Reseñas: {total_resenas} reseñas (⭐ {promedio:.1f}/5.0)")
+            else:
+                print("Reseñas: Sin reseñas disponibles")
+
             return producto
         else:
             print(f">>> No se encontró el producto con ID: {id}")
             return {}
+
+    @staticmethod
+    def obtener_resenas_producto(producto_id: str) -> list[dict]:
+        resenas: list[dict] = Model.obtener_resenas_producto(producto_id)
+        return resenas
 
     @staticmethod
     def actualizar_stock(cantidad: int, id: str) -> bool:
@@ -92,3 +109,53 @@ class SystemController:
             id_producto, id_usuario, calificacion, comentario
         )
         return exito
+
+    # ============= MÉTODOS PARA VENDEDOR =============
+
+    @staticmethod
+    def crear_producto_vendedor(
+        nombre: str,
+        descripcion: str,
+        precio: float,
+        stock: int,
+        categoria: str,
+        vendedor_id: str,
+    ) -> bool:
+        resultado: bool = Model.crear_producto_vendedor(
+            nombre, descripcion, precio, stock, categoria, vendedor_id
+        )
+        return resultado
+
+    @staticmethod
+    def actualizar_producto_vendedor(
+        producto_id: str,
+        nombre: str,
+        descripcion: str,
+        precio: float,
+        stock: int,
+        categoria: str,
+    ) -> bool:
+        resultado: bool = Model.actualizar_producto_vendedor(
+            producto_id, nombre, descripcion, precio, stock, categoria
+        )
+        return resultado
+
+    @staticmethod
+    def eliminar_producto_vendedor(producto_id: str) -> bool:
+        resultado: bool = Model.eliminar_producto_vendedor(producto_id)
+        return resultado
+
+    @staticmethod
+    def obtener_pedidos_vendedor(vendedor_id: str) -> list[dict]:
+        pedidos: list[dict] = Model.obtener_pedidos_vendedor(vendedor_id)
+        return pedidos
+
+    @staticmethod
+    def actualizar_estado_pedido(pedido_id: str, nuevo_estado: str) -> bool:
+        resultado: bool = Model.actualizar_estado_pedido(pedido_id, nuevo_estado)
+        return resultado
+
+    @staticmethod
+    def obtener_estadisticas_vendedor(vendedor_id: str) -> dict:
+        estadisticas: dict = Model.obtener_estadisticas_vendedor(vendedor_id)
+        return estadisticas
