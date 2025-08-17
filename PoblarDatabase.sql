@@ -38,21 +38,21 @@ INSERT INTO vendedores (cuenta_id, descripcion, valoracion) VALUES
 ---"juguetes", "ropa", "tecnologia", "hogar"
 -- 4. Productos
 INSERT INTO productos (id, nombre, descripcion, calificacion, stock, precio, categoria, vendedor_id) VALUES
-('PROD1001', 'Smartphone X9', '6.5" AMOLED, 128GB RAM, Triple Cámara', 4.5, 50, 8999.99, 'ELECTRONICA', 'USR004'),
-('PROD1002', 'Zapatos Running Air', 'Material transpirable, tallas 22-30', 4.2, 120, 1299.50, 'CALZADO', 'USR005'),
-('PROD1003', 'Cien Años de Soledad', 'Edición especial aniversario', 4.8, 80, 450.00, 'LIBROS', 'USR007'),
-('PROD1004', 'Pulsera Artesanal Plata', 'Hecha a mano por artesanos oaxaqueños', 3.9, 35, 799.00, 'JOYERIA', 'USR009'),
-('PROD1005', 'Router WiFi 6', 'Doble banda, 3000Mbps, 8 antenas', 4.1, 40, 2399.00, 'ELECTRONICA', 'USR004'),
-('PROD1006', 'Set Yoga Premium', 'Incluye mat, bloques y correa', 4.3, 90, 899.00, 'DEPORTES', 'USR010'),
-('PROD1007', 'Cámara DSLR 24MP', 'Grabación 4K, kit 2 lentes', 4.7, 25, 15499.00, 'FOTOGRAFIA', 'USR004'),
-('PROD1008', 'Vestido Lino Verano', 'Tallas S-XL, 4 colores disponibles', 4.0, 70, 899.00, 'ROPA', 'USR005'),
-('PROD1009', 'El Principito Ed. Tapa Dura', 'Ilustraciones originales', 4.9, 110, 350.00, 'LIBROS', 'USR007'),
-('PROD1010', 'Mochila Excursionismo', '40L, impermeable, soporte 15kg', 4.4, 60, 2199.00, 'DEPORTES', 'USR010'),
-('PROD1011', 'Aceite Esencial Lavanda', '100% puro, 30ml', 3.8, 200, 299.00, 'BELLEZA', 'USR009'),
-('PROD1012', 'Teclado Mecánico RGB', 'Switches Blue, retroiluminado', 4.2, 45, 1399.00, 'ELECTRONICA', 'USR004'),
-('PROD1013', 'Set Café Artesanal', '4 variedades de Chiapas, 250g cada una', 4.6, 85, 599.00, 'ALIMENTOS', 'USR005'),
-('PROD1014', 'Balón Fútbol Profesional', 'Tamaño 5, material sintético', 4.3, 150, 899.00, 'DEPORTES', 'USR010'),
-('PROD1015', 'Lámpara Sal del Himalaya', 'Base de madera, 20cm altura', 3.7, 40, 650.00, 'HOGAR', 'USR009');
+('PROD1001', 'Smartphone X9', '6.5" AMOLED, 128GB RAM, Triple Cámara', 4.5, 50, 8999.99, 'tecnologia', 'USR004'),
+('PROD1002', 'Zapatos Running Air', 'Material transpirable, tallas 22-30', 4.2, 120, 1299.50, 'ropa', 'USR005'),
+('PROD1003', 'Robot Educativo', 'Programable para niños, incluye sensores', 4.8, 80, 450.00, 'juguetes', 'USR007'),
+('PROD1004', 'Pulsera Artesanal Plata', 'Hecha a mano por artesanos oaxaqueños', 3.9, 35, 799.00, 'hogar', 'USR009'),
+('PROD1005', 'Router WiFi 6', 'Doble banda, 3000Mbps, 8 antenas', 4.1, 40, 2399.00, 'tecnologia', 'USR004'),
+('PROD1006', 'Set Deportivo Niños', 'Incluye pelota, conos y cuerda', 4.3, 90, 899.00, 'juguetes', 'USR010'),
+('PROD1007', 'Cámara DSLR 24MP', 'Grabación 4K, kit 2 lentes', 4.7, 25, 15499.00, 'tecnologia', 'USR004'),
+('PROD1008', 'Vestido Lino Verano', 'Tallas S-XL, 4 colores disponibles', 4.0, 70, 899.00, 'ropa', 'USR005'),
+('PROD1009', 'Muñeca Interactiva', 'Habla y camina, con accesorios', 4.9, 110, 350.00, 'juguetes', 'USR007'),
+('PROD1010', 'Mochila Escolar', 'Ergonómica, compartimentos organizadores', 4.4, 60, 2199.00, 'ropa', 'USR010'),
+('PROD1011', 'Difusor Aromas', 'Ultrasónico, temporizador, LED', 3.8, 200, 299.00, 'hogar', 'USR009'),
+('PROD1012', 'Teclado Mecánico RGB', 'Switches Blue, retroiluminado', 4.2, 45, 1399.00, 'tecnologia', 'USR004'),
+('PROD1013', 'Juego Mesa Familiar', 'Estrategia para 2-4 jugadores', 4.6, 85, 599.00, 'juguetes', 'USR005'),
+('PROD1014', 'Sudadera Deportiva', 'Material térmico, tallas S-XXL', 4.3, 150, 899.00, 'ropa', 'USR010'),
+('PROD1015', 'Lámpara Sal del Himalaya', 'Base de madera, 20cm altura', 3.7, 40, 650.00, 'hogar', 'USR009');
 
 -- 5. Pedidos
 INSERT INTO pedidos (id, cliente_id, direccion_entrega, fecha_entrega, fecha_compra, estado_envio) VALUES

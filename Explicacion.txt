@@ -1,0 +1,165 @@
+Explicacion del codigo
+
+Decidí tratar de usar el patrón de diseño MVC, modelo vista controlador. En un inicio para pruebas empecé el proyecto usando un sistema de ficheros como modelo inicial, para tener la interfaz gráfica funcionando.
+Lo cual fue un error ya que tuve que implementar funciones demás para guardar los datos en fichero, cosa que para la base de datos no tendría mucho sentido, pero para mantener el funcionamiento decidí nomás emular la ejecución de la función y retornar algo dependiendo de si se logró actualizar en la base de datos la información.
+
+El archivo más importante es Model/database_mode.py, ya que en este se realizan las querys a la base de datos, los otros son solo para mostrar en consola los datos.
+
+>>> CLASE Database_model 
+
+Esta clase es el modelo del patrón MVC se encarga de las operaciones con la base de datos MySQL. 
+
+Para configurar la base de datos tenemos:
+- DB_CONFIG: Diccionario con los parámetros de conexión a la base de datos local MySQL
+- connection: Variable estática que mantiene la conexión activa
+
+Los métodos dentro de la clase Database_model son los que detallaré a continuación:
+
+>>> MÉTODOS DE CONEXIÓN Y UTILIDAD 
+
+conectar():
+Esta función me conecta a la base de datos, por el momento es de manera local.
+Utiliza los parámetros definidos en DB_CONFIG para establecer la conexión con MySQL.
+Retorna True si la conexión es exitosa, False en caso contrario.
+También imprime información del servidor al conectarse exitosamente.
+
+_ejecutar_query(query, params, fetch_type):
+Esta función recibe un string que sirve como query, los parámetros y el tipo de fetch (one o all), 
+y realiza la query a la base de datos, si esta no es exitosa muestra el mensaje de error.
+Y dependiendo del método de fetch se retorna un conjunto de valores o solo uno.
+- fetch_type "one": retorna un solo registro
+- fetch_type "all": retorna todos los registros que coincidan
+- fetch_type "none": retorna el número de filas afectadas
+Es un método que me permite centralizar el manejo de las querys y el manejo de errores en la misma.
+
+cerrar_conexion():
+Cierra la conexión activa a la base de datos MySQL de forma segura.
+Verifica que exista una conexión antes de intentar cerrarla.
+
+>>> AUTENTICACION
+
+validar_usuario(email, password):
+Esta función sirve como login, realiza la siguiente query:
+"SELECT c.id, c.email, c.nombre, cl.cuenta_id as cliente_id, v.cuenta_id as vendedor_id
+FROM cuentas c
+LEFT JOIN clientes cl ON c.id = cl.cuenta_id
+LEFT JOIN vendedores v ON c.id = v.cuenta_id
+WHERE c.email = %s AND c.contrasena = %s"
+
+Si hay resultado, devuelve una tupla con (éxito: boleano , tipo_usuario, id_usuario), 
+para que la vista y el controlador sepa qué pantallas mostrar y qué flujo seguir.
+Los tipos pueden ser: "cliente", "vendedor" o "Ninguno" si el login no fue exitoso.
+
+>>> MÉTODOS PARA PRODUCTOS 
+
+filtrar_productos(metodo, busqueda):
+Esta función es un poco más compleja. Tenemos una query base la cual es:
+"SELECT id, nombre, descripcion, precio, stock, categoria FROM productos"
+Y dependiendo del método de búsqueda se completa la query:
+- Vacío: ordena por nombre
+- "id": WHERE con id exacto
+- "nombre": WHERE LIKE para búsqueda parcial en nombre
+- "descripcion": WHERE LIKE para búsqueda parcial en descripción  
+- "categoria": WHERE exacto en categoría (valida que sea una categoría válida)
+- "vendedor": WHERE con vendedor_id
+Retorna dos listas: una con los nombres formateados de productos y otra con sus IDs.
+
+obtener_producto(id):
+Esta función obtiene la información completa de un producto específico mediante su ID.
+Ejecuta: "SELECT id, nombre, descripcion, calificacion, stock, precio, categoria, vendedor_id FROM productos WHERE id = %s"
+Retorna un diccionario con toda la información del producto o un diccionario vacío si no se encuentra.
+
+obtener_resenas_producto(producto_id):
+Obtiene todas las reseñas asociadas a un producto específico.
+Realiza un JOIN entre las tablas productos_resenas, clientes y cuentas para obtener:
+- ID de la reseña, calificación, comentario, fecha
+- Nombre del cliente que hizo la reseña
+Retorna una lista de diccionarios con la información de cada reseña, ordenadas por fecha descendente.
+
+actualizar_stock(cantidad, id):
+Actualiza el stock de un producto específico con la nueva cantidad proporcionada.
+Ejecuta: "UPDATE productos SET stock = %s WHERE id = %s"
+Retorna True si la actualización fue exitosa, False en caso contrario.
+
+crear_producto_vendedor(nombre, descripcion, precio, stock, categoria, vendedor_id):
+Permite a un vendedor crear un nuevo producto en el sistema.
+Genera automáticamente un ID único con formato "PROD###" basado en el último producto registrado.
+Inserta el nuevo producto en la tabla productos con todos los datos proporcionados.
+Retorna True si la creación fue exitosa.
+
+actualizar_producto_vendedor(producto_id, nombre, descripcion, precio, stock, categoria):
+Permite a un vendedor actualizar la información de un producto existente.
+Actualiza todos los campos modificables del producto (nombre, descripción, precio, stock, categoría).
+Retorna True si la actualización fue exitosa.
+
+eliminar_producto_vendedor(producto_id):
+Elimina un producto del sistema, pero primero verifica que no tenga pedidos asociados.
+Si el producto tiene pedidos, no se puede eliminar y retorna False.
+Si se puede eliminar, primero borra las reseñas asociadas y luego el producto.
+Retorna True si la eliminación fue exitosa.
+
+=== MÉTODOS DE PEDIDOS ===
+
+guardar_pedido(id_usr, id_producto, cantidad):
+Este metodo era usado en el sistema de ficheros para guardar los datos del pedido.
+Internamente crea un nuevo pedido y agrega el producto especificado.
+Delega sus tareas a crear_nuevo_pedido y agregar_producto_a_pedido.
+
+crear_nuevo_pedido(id_usr):
+Crea un nuevo pedido en estado "EN_CARRITO" para un cliente.
+Genera un ID único con formato "PED###" basado en el último pedido.
+Obtiene la dirección de envío del cliente y establece la fecha de compra actual.
+Retorna el ID del pedido creado o una cadena vacía si falla.
+
+agregar_producto_a_pedido(id_pedido, id_producto, cantidad):
+Agrega un producto a un pedido existente.
+Si el producto ya está en el pedido, suma la cantidad; si no, lo inserta como nuevo.
+Maneja la tabla pedidos_productos que relaciona pedidos con productos.
+Retorna True si la operación fue exitosa.
+
+obtener_pedidos_usuario(id_usr):
+Obtiene todos los pedidos de un cliente específico con su información completa.
+Para cada pedido, también obtiene la lista de productos incluidos con sus detalles.
+Retorna una lista de diccionarios con información completa de cada pedido:
+- Datos del pedido (ID, direcciones, fechas, estado)
+- Lista de productos con nombre, precio y cantidad
+
+confirmar_pedido(id_pedido):
+Cambia el estado de un pedido de "EN_CARRITO" a "EN_PROCESO".
+Establece una fecha de entrega estimada (5 días desde la confirmación).
+Retorna True si la confirmación fue exitosa.
+
+obtener_pedidos_vendedor(vendedor_id):
+Obtiene todos los pedidos que contienen productos de un vendedor específico.
+Calcula el total correspondiente solo a los productos de ese vendedor.
+Incluye información del cliente y los productos del vendedor en cada pedido.
+Útil para que los vendedores vean sus ventas y gestionen sus envíos.
+
+actualizar_estado_pedido(pedido_id, nuevo_estado):
+Actualiza el estado de envío de un pedido.
+Si el nuevo estado es "ENTREGADO", también actualiza la fecha de entrega actual.
+Estados válidos: "EN_CARRITO", "EN_PROCESO", "ENVIADO", "ENTREGADO".
+Retorna True si la actualización fue exitosa.
+
+>>> MÉTODOS PARA RESEÑAS
+
+crear_resena_producto(id_producto, id_usuario, calificacion, comentario):
+Permite a un cliente crear una reseña para un producto.
+Genera un ID único con formato "REV###" para la nueva reseña.
+Inserta la reseña con calificación (1-5) y comentario opcional.
+Establece automáticamente la fecha actual de la reseña.
+Retorna True si la creación fue exitosa.
+
+>>> MÉTODOS DE ESTADÍSTICAS 
+
+obtener_estadisticas_vendedor(vendedor_id):
+Genera un reporte completo de estadísticas para un vendedor específico.
+Utiliza consultas optimizadas para obtener:
+- Total de productos y productos sin stock
+- Estadísticas de pedidos por estado (en proceso, enviados, entregados, etc.)
+- Total de ventas en dinero
+- Top 5 productos más vendidos con cantidades y recaudación
+
+Retorna un diccionario con todas las métricas importantes para el vendedor.
+Es útil para dashboards y reportes de rendimiento.
+
