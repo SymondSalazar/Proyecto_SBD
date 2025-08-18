@@ -1,6 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional, Tuple, Any
 from Controller.InputManager import InputManager
 
@@ -394,20 +394,16 @@ class Database_model:
 
     @staticmethod
     def confirmar_pedido(id_pedido: str) -> bool:
-        """Confirma un pedido cambiando su estado y estableciendo fecha de entrega"""
+        """Confirma un pedido usando el procedimiento almacenado como cliente"""
         try:
-            fecha_entrega = (datetime.now() + timedelta(days=5)).strftime("%Y-%m-%d")
-
-            query = """
-                UPDATE pedidos 
-                SET estado_envio = 'EN_PROCESO', fecha_entrega = %s
-                WHERE id = %s
-            """
-
+            query = "CALL sp_modificar_pedido(%s, %s, %s)"
             resultado = Database_model._ejecutar_query(
-                query, (fecha_entrega, id_pedido)
+                query, (id_pedido, "EN_PROCESO", "cliente")
             )
-            return isinstance(resultado, int) and resultado > 0
+            return resultado is not None
+        except Exception as e:
+            print(f">>> ERROR al confirmar pedido: {e}")
+            return False
 
         except Exception:
             return False
@@ -624,33 +620,18 @@ class Database_model:
         return pedidos_vendedor
 
     @staticmethod
-    def actualizar_estado_pedido(pedido_id: str, nuevo_estado: str) -> bool:
-        """Actualiza el estado de un pedido"""
+    def actualizar_estado_pedido(
+        pedido_id: str, nuevo_estado: str, tipo_usuario: str
+    ) -> bool:
+        """Ahora usa el store procedure"""
         try:
-            # Si el estado es ENTREGADO, actualizar fecha de entrega
-            if nuevo_estado == "ENTREGADO":
-                fecha_entrega = datetime.now().strftime("%Y-%m-%d")
-                query = """
-                    UPDATE pedidos 
-                    SET estado_envio = %s, fecha_entrega = %s
-                    WHERE id = %s
-                """
-                resultado = Database_model._ejecutar_query(
-                    query, (nuevo_estado, fecha_entrega, pedido_id)
-                )
-            else:
-                query = """
-                    UPDATE pedidos 
-                    SET estado_envio = %s
-                    WHERE id = %s
-                """
-                resultado = Database_model._ejecutar_query(
-                    query, (nuevo_estado, pedido_id)
-                )
-
-            return isinstance(resultado, int) and resultado > 0
-
-        except Exception:
+            query = "CALL sp_modificar_pedido(%s, %s, %s)"
+            resultado = Database_model._ejecutar_query(
+                query, (pedido_id, nuevo_estado, tipo_usuario)
+            )
+            return resultado is not None
+        except Exception as e:
+            print(f">>> ERROR al actualizar estado del pedido: {e}")
             return False
 
     @staticmethod
