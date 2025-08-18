@@ -602,10 +602,10 @@ def agregar_producto_vendedor(id_vendedor: str) -> None:
             print(">>> ERROR: El precio debe ser mayor a 0")
 
     stock: int = 0
-    while stock < 0:
+    while stock <= 0:
         stock = InputManager.leer_entero("Ingrese la cantidad en stock: ")
-        if stock < 0:
-            print(">>> ERROR: El stock no puede ser negativo")
+        if stock <= 0:
+            print(">>> ERROR: El stock no puede ser negativo o igual a cero")
 
     print("\nCategorías disponibles:")
     categorias: list[str] = ["juguetes", "ropa", "tecnologia", "hogar"]
