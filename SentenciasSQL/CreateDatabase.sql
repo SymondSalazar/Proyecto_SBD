@@ -26,7 +26,7 @@ CREATE TABLE clientes (
 CREATE TABLE vendedores (
     cuenta_id VARCHAR(10) NOT NULL PRIMARY KEY,
     descripcion TEXT,
-    valoracion DECIMAL(2,1) DEFAULT 0.0 CHECK (calificacion >= 0.0 AND calificacion <= 5.0),
+    valoracion DECIMAL(2,1) DEFAULT 0.0 CHECK (valoracion >= 0.0 AND valoracion <= 5.0),
     FOREIGN KEY (cuenta_id) REFERENCES cuentas(id) 
 );
 
