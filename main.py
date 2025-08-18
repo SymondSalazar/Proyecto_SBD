@@ -32,7 +32,7 @@ def comprar(id_usr, product_info: dict) -> bool:
 
     tarjeta: str = ""
 
-    while not tarjeta.isdigit() and len(tarjeta) != 10:
+    while (not tarjeta.isdigit()) or len(tarjeta) != 10:
         tarjeta = InputManager.leer_texto_no_vacio(
             "Ingrese el número de su tarjeta de crédito (10 dígitos): "
         )
