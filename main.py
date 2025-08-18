@@ -967,7 +967,7 @@ def actualizar_estado_pedido_vendedor(id_vendedor: str) -> None:
 
         if confirmacion:
             resultado: bool = SystemController.actualizar_estado_pedido(
-                pedido_seleccionado["id"], nuevo_estado
+                pedido_seleccionado["id"], nuevo_estado, "vendedor"
             )
 
             if resultado:

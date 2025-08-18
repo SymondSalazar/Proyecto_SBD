@@ -151,8 +151,12 @@ class SystemController:
         return pedidos
 
     @staticmethod
-    def actualizar_estado_pedido(pedido_id: str, nuevo_estado: str) -> bool:
-        resultado: bool = Model.actualizar_estado_pedido(pedido_id, nuevo_estado)
+    def actualizar_estado_pedido(
+        pedido_id: str, nuevo_estado: str, tipo_usuario: str
+    ) -> bool:
+        resultado: bool = Model.actualizar_estado_pedido(
+            pedido_id, nuevo_estado, tipo_usuario
+        )
         return resultado
 
     @staticmethod
