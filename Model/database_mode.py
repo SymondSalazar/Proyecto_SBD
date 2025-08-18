@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 from datetime import datetime, timedelta
 from typing import Optional, Tuple, Any
+from Controller.InputManager import InputManager
 
 
 class Database_model:
@@ -96,7 +97,17 @@ class Database_model:
             return (False, "Ninguno", "Ninguno")
 
         id_usuario = str(resultado["id"])
-
+        seleccion: int = 0
+        if resultado["cliente_id"] and resultado["vendedor_id"]:
+            opciones: list[str] = ["Ingresar como Cliente", "Ingresar como Vendedor"]
+            seleccion = InputManager.leer_opcion_menu(
+                opciones, "Seleccione el modo de entrada"
+            )
+            match seleccion:
+                case 1:
+                    return (True, "cliente", id_usuario)
+                case 2:
+                    return (True, "vendedor", id_usuario)
         # Determinar el tipo de usuario
         if resultado["cliente_id"]:
             return (True, "cliente", id_usuario)
